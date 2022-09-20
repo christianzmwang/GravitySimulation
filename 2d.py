@@ -2,13 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-"""
-Create Your Own N-body Simulation (With Python)
-Philip Mocz (2020) Princeton Univeristy, @PMocz
-Simulate orbits of stars interacting due to gravity
-Code calculates pairwise forces according to Newton's Law of Gravity
-"""
-
 
 def getAcc(pos, mass, G, softening):
     """

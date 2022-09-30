@@ -9,6 +9,8 @@ Create Your Own N-body Simulation (With Python)
 Philip Mocz (2020) Princeton Univeristy, @PMocz
 Simulate orbits of stars interacting due to gravity
 Code calculates pairwise forces according to Newton's Law of Gravity
+
+Edited to 2D
 """
 
 

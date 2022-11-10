@@ -1,7 +1,15 @@
 
+
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
+#Creates a folder named "figures" to store figures
+img_dir = os.path.join(os.getcwd(), r"figures")
+if not os.path.exists(img_dir):
+  os.makedirs(img_dir)
+
+#Get acceleration function
 def getAcc(pos, mass, G, softening):
 
   # Positions r = [x, y]
@@ -44,9 +52,8 @@ def main(s):
     plotRealTime = 0  # switch on for plotting as the simulation goes along
 
     # Generate Initial Conditions
-    #np.random.seed(17)  # set the random number generator seed
-
-    #Star, Planet, Planet, Meteor
+  
+    #erere
     mass = np.array([[10000], [1]])  #20.0*np.ones((N, 1))/N   #total mass of particles is 20
     pos = np.array([[0.0, 0.0], [50.0, -100.0]])  # np.random.randn(N,3)   # randomly selected positions and velocities
     vel = np.array([[0.0, 0.0], [0.0, s]])  # np.random.randn(N,3)

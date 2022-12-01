@@ -116,7 +116,7 @@ def main(s):
     print(c[0])
 
     # Save figure
-    plt.savefig('images/nbody{}.png'.format(s), dpi=240)
+    plt.savefig('figures/nbody{}.png'.format(s), dpi=240)
     #plt.show()
     plt.close()
     return 0

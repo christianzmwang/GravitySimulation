@@ -1,4 +1,5 @@
 
+
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -52,6 +53,8 @@ def main(s):
     # save particle orbits for plotting trails
     pos_save = np.zeros((2, 2, 10001))
     pos_save[:, :, 0] = pos
+
+    #Save acceleration and velocity
     acc_vel_save = [round(acc[1, 0]), vel[1, 0]]
 
     # prep figure
@@ -72,9 +75,10 @@ def main(s):
         # (1/2) kick
         vel += acc/2.0
 
-        # save positions for plotting trail, and save acceleration 
+        # save positions for plotting trail
         pos_save[:, :, i+1] = pos
  
+        # save acceleration and velocity
         acc_vel_save.append( [round(acc[1, 0]), round(vel[1, 0])] )
 
         # plot in real time
@@ -88,6 +92,7 @@ def main(s):
 
             plt.pause(0.0001)
         
+        # end simulation when projectile hits stationary body
         if pos[1, 0] >= 0:
           print(i)
           break
@@ -101,5 +106,8 @@ def main(s):
 
 
 main(100)
+
+
+
 
 

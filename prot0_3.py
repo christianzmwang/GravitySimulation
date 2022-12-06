@@ -21,7 +21,7 @@ def getAcc(pos, mass, G, softening):
   dy  = y.T - y
 
   # matrix that stores 1/r^2 for all particle pairwise particle separations
-  inv_r2 = (dx**2 + dy**2 + softening**2)
+  inv_r2 = (dx**2 + dy**2 + softening**2) ** 0.5
   inv_r2[inv_r2 > 0] = inv_r2[inv_r2 > 0]**(-0.5)
 
   ax = G * (dx * inv_r2) @ mass

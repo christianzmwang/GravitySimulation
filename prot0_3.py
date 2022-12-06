@@ -21,8 +21,8 @@ def getAcc(pos, mass, G, softening):
   dy  = y.T - y
 
   # matrix that stores 1/r^2 for all particle pairwise particle separations
-  inv_r2 = (dx**2 + dy**2 + softening**2) ** 0.5
-  inv_r2[inv_r2 > 0] = inv_r2[inv_r2 > 0]**(-1.5)
+  inv_r2 = (dx**2 + dy**2 + softening**2) ** (0.5)
+  inv_r2[inv_r2 > 0] = inv_r2[inv_r2 > 0] **(-1.5)
 
   ax = G * (dx * inv_r2) @ mass
   ay = G * (dy * inv_r2) @ mass
@@ -41,7 +41,7 @@ def main(s):
   
     #General initial conditions 
     mass = np.array([[s], [1]])  
-    pos = np.array([[0.0, 0.0], [-1000000.0, 0.0]])  
+    pos = np.array([[0.0, 0.0], [-10000000.0, 0.0]])  
     vel = np.array([[0.0, 0.0], [0.0, 0.0]])  
 
     # Convert to Center-of-Mass frame
@@ -55,7 +55,7 @@ def main(s):
     pos_save[:, :, 0] = pos
 
     #Save acceleration and velocity
-    acc_vel_save = [round(acc[1, 0]), vel[1, 0]]
+    acc_vel_xpos_save = [ [ acc[1, 0], vel[1, 0], pos[0, 0]-pos[1, 0]] ]
 
     # prep figure
     plt.figure(figsize=(6, 6), dpi=80)
@@ -70,16 +70,20 @@ def main(s):
 
         # update accelerations
         acc = getAcc(pos, mass, G, softening)
-        print(acc)
 
         # (1/2) kick
         vel += acc/2.0
 
         # save positions for plotting trail
         pos_save[:, :, i+1] = pos
- 
+
+        # end simulation when projectile hits stationary body
+        if pos[1, 0] >= 0:
+          print(i)
+          break
+
         # save acceleration and velocity
-        acc_vel_save.append( [round(acc[1, 0]), round(vel[1, 0])] )
+        acc_vel_xpos_save.append( [acc[1, 0], vel[1, 0], pos[0, 0]-pos[1, 0]] )
 
         # plot in real time
         if plotRealTime:
@@ -91,21 +95,25 @@ def main(s):
             plt.scatter(pos[:, 0], pos[:, 1], s=10, color='blue')
 
             plt.pause(0.0001)
-        
-        # end simulation when projectile hits stationary body
-        if pos[1, 0] >= 0:
-          print(i)
-          break
+
+    saved = np.array(acc_vel_xpos_save)
 
     # Save figure
     plt.savefig('figures/nbody{}.png'.format(s), dpi=240)
+    plt.show(block=False)
+    plt.pause(5)
+    plt.cla()
+
+    #plotting x = position and y = acceleration. 1/x^2 relation 
+    plt.plot(saved[:, 2], saved[:, 0])
     plt.show()
-    print(acc_vel_save)
 
     return 0
 
 
-main(100)
+main(10000000)
+
+
 
 
 

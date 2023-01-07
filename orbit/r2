@@ -1,6 +1,5 @@
 
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -32,8 +31,8 @@ def main():
     N = 2    # Number of particles
     t = 0      # current time of the simulation
     tEnd = 10.0   # time at which simulation ends
-    dt = 0.1   # timestep
-    G = 1.0    # Newton's Gravitational Constant
+    dt = 0.05   # timestep
+    G = 1  # Newton's Gravitational Constant
     softening = 0.2
     plotRealTime = True  # switch on for plotting as the simulation goes along
 
@@ -107,3 +106,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

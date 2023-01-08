@@ -2,60 +2,69 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from math import cos, sin, atan, pi
 
-def getAcc(pos, mass, G, softening):
-    """
-Calculate the acceleration on each particle due to Newton's Law 
+def getAcc(pos, mass, G):
 
-    """
-    # positions r = [x,y] for all particles
+    # x and y position of both bodies
     x = pos[:, 0:1]
     y = pos[:, 1:2]
 
-    # matrix that stores all pairwise particle separations: r_j - r_i
-    dx = x.T - x
-    dy = y.T - y
+    # distance x, sun - planet
+    dx = x[0] - x[1]
+    # direction of acceleration on the x-axis. Negative if x of planet > sun and vice versa 
+    ax_dir = -1 if dx < 0 else 1
 
-    # matrix that stores 1/r^2 for all particle pairwise particle separations
-    inv_r3 = (dx**2 + dy**2 + softening) ** 0.5
-    inv_r3[inv_r3 > 0] = inv_r3[inv_r3 > 0]**(-1)
+    # distance y, sun - planet
+    dy = y[0] - y[1]
+    # direction of acceleration on the y-axis. Negative if y of planet > sun and vice versa
+    ay_dir = -1 if dy < 0 else 1
 
-    ax = G * (dx * inv_r3) @ mass
-    ay = G * (dy * inv_r3) @ mass
+    # Calculate distance between planet and sun with pythagoras. 
+    r = ( dx**2 + dy**2 ) ** 0.5
 
-    # pack together the acceleration components
-    a = np.hstack((ax, ay))
-    return a
+    # absolute value of angle in radians
+    thet = abs(atan(dy/dx))
 
-def main():
-    """ N-body simulation """
+    # 1/r
+    inv_r = r**-1
+
+    # Calculate the force of gravity 
+    f = G * inv_r * mass[0] * mass[1] 
+
+    # Decompose the acceleration vector into x and y. 
+    ax = float(cos(thet) * (f/mass[1]) ) * ax_dir
+    ay = float(sin(thet) * (f/mass[1]) ) * ay_dir
+
+    # returns the acceleration on the x- and y-axis 
+    return np.array([ax, ay])
+
+
+def main(r):
 
     # Simulation parameters
-    N = 2    # Number of particles
-    t = 0      # current time of the simulation
-    tEnd = 10.0   # time at which simulation ends
-    dt = 0.01   # timestep
-    G = 1.0    # Newton's Gravitational Constant
-    softening = 0.2
-    plotRealTime = True  # switch on for plotting as the simulation goes along
+    t = 0                    # current time of the simulation
+    tEnd = 100000.0          # time at which simulation ends if an orbit is not yet completed
+    dt = 0.1                 # timestep, the lower, the more accurate. >1 for faster runtime 
+    G = 1.0                  # Newton's Gravitational Constant
+    l = int(r*2)             # for plotting graph 
+    plotRealTime = False     # switch on for plotting as the simulation goes along
 
-    # Star, Planet
+    # Star, Planet (initial conditions)
     mass = np.array([[100], [1]])  
-    pos = np.array([[0.0, 0.0], [5.0, 0.0]])  
-    vel = np.array([[0.0, 0.0], [0.0, 22.5]])  
-
-
-    # Convert to Center-of-Mass frame
-    vel[1] -= np.mean(mass * vel, 0) / np.mean(mass)
+    # r is the radius of the orbit, which will be the initial start posiiton of planet
+    pos = np.array([[0.0, 0.0], [r, 0.0]]) 
+    # Velocity for orbit calculated = (G*M)**0.5 
+    vel = np.array([0.0, (G*mass[0, 0])**0.5 ])  
 
     # calculate initial gravitational accelerations
-    acc = getAcc(pos, mass, G, softening)
-
+    acc = getAcc(pos, mass, G)
+    
     # number of timesteps
     Nt = int(np.ceil(tEnd/dt))
 
-    # save energies, particle orbits for plotting trails
-    pos_save = np.zeros((N, 2, Nt+1))
+    # save positions for plotting trails
+    pos_save = np.zeros((2, 2, Nt+1))
     pos_save[:, :, 0] = pos
     t_all = np.arange(Nt+1)*dt
 
@@ -64,28 +73,26 @@ def main():
     grid = plt.GridSpec(1, 1, wspace=0.0, hspace=0.3)
     ax1 = plt.subplot(grid[:, 0])
 
-
+    # for loop for simulation 
     for i in range(Nt):
-        # (1/2) kick
-        vel[1] += acc[1] * dt/2.0
 
-        # drift
-        pos[1] += vel[1] * dt
+        # update velocity by adding acceleration 
+        vel += acc * dt
+
+        # update position of planet by velocity
+        pos[1] += vel * dt
 
         # update accelerations
-        acc = getAcc(pos, mass, G, softening)
-
-        # (1/2) kick
-        vel[1] += acc[1] * dt/2.0
+        acc = getAcc(pos, mass, G)
 
         # update time
         t += dt
 
-        # save energies, positions for plotting trail
+        # save positions for plotting trail
         pos_save[:, :, i+1] = pos
 
         # plot in real time
-        if plotRealTime or (i == Nt-1):
+        if plotRealTime:
             plt.sca(ax1)
             plt.cla()
             xx = pos_save[:, 0, 0:i+1]
@@ -94,18 +101,41 @@ def main():
             plt.scatter(pos[:, 0], pos[:, 1], s=10, color='blue')
             ax1.set(xlim=(-2, 2), ylim=(-2, 2))
             ax1.set_aspect('equal', 'box')
-            ax1.set_xticks([i for i in range(-10, 11)])
-            ax1.set_yticks([i for i in range(-10, 11)])
-
-
+            ax1.set_xticks([i for i in range(-l, l+1, int(l/10))])
+            ax1.set_yticks([i for i in range(-l, l+1, int(l/10))])
             plt.pause(0.0001)
 
-    # Save figure
-    plt.savefig('nbody.png', dpi=240)
-    plt.show()
+        # End simulation after one revolution 
+        if ( pos_save[:, 1, i][1] < 0 and pos_save[:, 1, i+1][1] > 0 ):
+            # Calculate Kepler's constant with duration of an orbit and radius of orbit
+            k = t**2 / r**3
+            # Kepler's constants 
+            print(k)
+            # Print orbit duration and final position of planet just to check
+            #print(t, pos[1])
+            
+            break
+            
+
+    # Show figure
+    plt.sca(ax1)
+    plt.cla()
+    xx = pos_save[:, 0, 0:i+1]
+    yy = pos_save[:, 1, 0:i+1]
+    plt.scatter(xx, yy, s=1, color=[.7, .7, 1])
+    plt.scatter(pos[:, 0], pos[:, 1], s=10, color='blue')
+    ax1.set(xlim=(-2, 2), ylim=(-2, 2))
+    ax1.set_aspect('equal', 'box')
+    ax1.set_xticks([i for i in range(-l, l+1, int(l/10))])
+    ax1.set_yticks([i for i in range(-l, l+1, int(l/10))])
+    plt.show(block=False)
+    plt.pause(3)
+    plt.close()
 
     return 0
 
+# different orbit radiuses to check if Kepler's constant is indeed constant
+radius = [i for i in range(50, 251, 50)]
 
-if __name__ == "__main__":
-    main()
+for i in radius:
+    main(i)

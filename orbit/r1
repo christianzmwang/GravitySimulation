@@ -40,12 +40,12 @@ def getAcc(pos, mass, G):
     return np.array([ax, ay])
 
 
-def main(r):
+def main(r, ts):
 
     # Simulation parameters
     t = 0                    # current time of the simulation
     tEnd = 100000.0          # time at which simulation ends if an orbit is not yet completed
-    dt = 0.1                 # timestep, the lower, the more accurate. >1 for faster runtime 
+    dt = ts / (14400/31.415)     # Time step duration calculated so all r testet get exactly 720 data points
     G = 1.0                  # Newton's Gravitational Constant
     l = int(r*2)             # for plotting graph 
     plotRealTime = False     # switch on for plotting as the simulation goes along
@@ -110,7 +110,7 @@ def main(r):
             # Calculate Kepler's constant with duration of an orbit and radius of orbit
             k = t**2 / r**3
             # Kepler's constants 
-            print(k)
+            print(t, k)
             # Print orbit duration and final position of planet just to check
             #print(t, pos[1])
             
@@ -128,14 +128,15 @@ def main(r):
     ax1.set_aspect('equal', 'box')
     ax1.set_xticks([i for i in range(-l, l+1, int(l/10))])
     ax1.set_yticks([i for i in range(-l, l+1, int(l/10))])
-    plt.show(block=False)
-    plt.pause(3)
+    # Delete below # to display visualization 
+    #plt.show(block=False)
+    #plt.pause(3)
     plt.close()
 
     return 0
 
 # different orbit radiuses to check if Kepler's constant is indeed constant
-radius = [i for i in range(50, 251, 50)]
+radius = [i for i in range(50, 1001, 50)]
 
-for i in radius:
-    main(i)
+for i, r in enumerate(radius, 1):
+    main(r, i)

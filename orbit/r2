@@ -1,5 +1,4 @@
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 from math import cos, sin, atan, pi
@@ -26,11 +25,11 @@ def getAcc(pos, mass, G):
     # absolute value of angle in radians
     thet = abs(atan(dy/dx))
 
-    # 1/r^3
-    inv_r3 = r**-3
+    # 1/r^2
+    inv_r2 = r**-2
 
     # Calculate the force of gravity 
-    f = G * inv_r3 * mass[0] * mass[1] 
+    f = G * inv_r2 * mass[0] * mass[1] 
 
     # Decompose the acceleration vector into x and y. 
     ax = float(cos(thet) * (f/mass[1]) ) * ax_dir
@@ -45,7 +44,7 @@ def main(r):
     # Simulation parameters
     t = 0                    # current time of the simulation
     tEnd = 100000.0          # time at which simulation ends if an orbit is not yet completed
-    dt = 1.0                 # timestep, the lower, the more accurate. >1 for faster runtime 
+    dt = 0.1                 # timestep, the lower, the more accurate. >1 for faster runtime 
     G = 1.0                  # Newton's Gravitational Constant
     l = int(r*2)             # for plotting graph 
     plotRealTime = False     # switch on for plotting as the simulation goes along
@@ -54,8 +53,8 @@ def main(r):
     mass = np.array([[100], [1]])  
     # r is the radius of the orbit, which will be the initial start posiiton of planet
     pos = np.array([[0.0, 0.0], [r, 0.0]]) 
-    # Velocity for orbit calculated = (G*M/r^2)^0.5 
-    vel = np.array([0.0, (G*mass[0, 0]/r**2)**0.5 ])  
+    # Velocity for orbit calculated = (G*M/r)^0.5 
+    vel = np.array([0.0, (G*mass[0, 0]/r)**0.5 ])  
 
     # calculate initial gravitational accelerations
     acc = getAcc(pos, mass, G)
@@ -139,4 +138,3 @@ radius = [i for i in range(50, 251, 50)]
 
 for i in radius:
     main(i)
-

@@ -128,6 +128,7 @@ def main(r, ts):
     ax1.set_aspect('equal', 'box')
     ax1.set_xticks([i for i in range(-l, l+1, int(l/10))])
     ax1.set_yticks([i for i in range(-l, l+1, int(l/10))])
+    # Delete the # below to display plot visualization 
     #plt.show(block=False)
     #plt.pause(10)
     plt.close()

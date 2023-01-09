@@ -54,7 +54,7 @@ def main(r):
     mass = np.array([[100], [1]])  
     # r is the radius of the orbit, which will be the initial start posiiton of planet
     pos = np.array([[0.0, 0.0], [r, 0.0]]) 
-    # Velocity for orbit calculated = (G*M)**0.5 
+    # Velocity for orbit calculated = (G*M)^0.5 
     vel = np.array([0.0, (G*mass[0, 0])**0.5 ])  
 
     # calculate initial gravitational accelerations

@@ -135,7 +135,7 @@ def main(r, ts):
 radius = [i for i in range(50, 1001, 50)]
 k = []
 
-#Simulate for every orbit radius
+# Simulating for every radius and storin Kepler's Constant Value in variable k
 for i, r in enumerate(radius, 1):
     k.append(main(r, i))
 
@@ -146,5 +146,4 @@ plt.ylabel("Kepler's Constant")
 plt.xticks([i for i in range(0, 1001, 100)])
 #plt.savefig("n.png", dpi=240)
 plt.show()
-
 

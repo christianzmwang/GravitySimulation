@@ -1,5 +1,6 @@
 
 
+
 import numpy as np
 import matplotlib.pyplot as plt
 from math import cos, sin, atan, pi
@@ -109,11 +110,6 @@ def main(r, ts):
         if ( pos_save[:, 1, i][1] < 0 and pos_save[:, 1, i+1][1] > 0 ):
             # Calculate Kepler's constant with duration of an orbit and radius of orbit
             k = t**2 / r**3
-            # Kepler's constants 
-            print(t, k)
-            # Print orbit duration and final position of planet just to check
-            #print(t, pos[1])
-            
             break
             
 
@@ -128,18 +124,25 @@ def main(r, ts):
     ax1.set_aspect('equal', 'box')
     ax1.set_xticks([i for i in range(-l, l+1, int(l/10))])
     ax1.set_yticks([i for i in range(-l, l+1, int(l/10))])
-    # Delete the # below to display plot visualization 
     #plt.show(block=False)
     #plt.pause(10)
     plt.close()
 
-    return 0
+    return k
 
-# different orbit radiuses to check if Kepler's constant is indeed constant
+# Variable which stores all the radiuses to be simulated
 radius = [i for i in range(50, 1001, 50)]
+k = []
 
+# Simulating for every radius and storin Kepler's Constant Value in variable k
 for i, r in enumerate(radius, 1):
-    main(r, i)
+    k.append(main(r, i))
 
-
+#Plot Kepler's constant against Orbit radius
+plt.scatter(radius, k)
+plt.xlabel("Orbit Radius")
+plt.ylabel("Kepler's Constant")
+plt.xticks([i for i in range(0, 1001, 100)])
+#plt.savefig("n.png", dpi=240)
+plt.show()
 

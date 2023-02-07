@@ -1,5 +1,6 @@
 
 
+
 import numpy as np
 import matplotlib.pyplot as plt
 from math import cos, sin, atan, pi
@@ -45,7 +46,7 @@ def main(r, ts):
     # Simulation parameters
     t = 0                    # current time of the simulation
     tEnd = 100000.0          # time at which simulation ends if an orbit is not yet completed
-    dt = ts / (14400/31.415)     # Time step duration calculated so all r testet get exactly 720 data points
+    dt = ts / (14400/31.415)     # Time step duration calculated so all r testet get exactly 14400 data points
     G = 1.0                  # Newton's Gravitational Constant
     l = int(r*2)             # for plotting graph 
     plotRealTime = False     # switch on for plotting as the simulation goes along
@@ -109,11 +110,6 @@ def main(r, ts):
         if ( pos_save[:, 1, i][1] < 0 and pos_save[:, 1, i+1][1] > 0 ):
             # Calculate Kepler's constant with duration of an orbit and radius of orbit
             k = t**2 / r**3
-            # Kepler's constants 
-            print(t, k)
-            # Print orbit duration and final position of planet just to check
-            #print(t, pos[1])
-            
             break
             
 
@@ -133,10 +129,22 @@ def main(r, ts):
     #plt.pause(3)
     plt.close()
 
-    return 0
+    return k
 
-# different orbit radiuses to check if Kepler's constant is indeed constant
+# Variable which stores all the radiuses to be simulated
 radius = [i for i in range(50, 1001, 50)]
+k = []
 
+#Simulate for every orbit radius
 for i, r in enumerate(radius, 1):
-    main(r, i)
+    k.append(main(r, i))
+
+#Plot Kepler's constant against Orbit radius
+plt.scatter(radius, k)
+plt.xlabel("Orbit Radius")
+plt.ylabel("Kepler's Constant")
+plt.xticks([i for i in range(0, 1001, 100)])
+#plt.savefig("n.png", dpi=240)
+plt.show()
+
+

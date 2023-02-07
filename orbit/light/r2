@@ -1,0 +1,82 @@
+
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+from math import cos, sin, atan, pi
+
+def getAcc(pos, mass, G):
+
+    x = pos[:, 0:1]
+    y = pos[:, 1:2]
+
+    dx = x[0] - x[1]
+    ax_dir = -1 if dx < 0 else 1
+
+    dy = y[0] - y[1]
+    ay_dir = -1 if dy < 0 else 1
+
+    r = ( dx**2 + dy**2 ) ** 0.5
+
+    thet = abs(atan(dy/dx))
+
+    inv_r2 = r**-2
+
+    f = G * inv_r2 * mass[0] * mass[1] 
+
+    ax = float(cos(thet) * (f/mass[1]) ) * ax_dir
+    ay = float(sin(thet) * (f/mass[1]) ) * ay_dir
+
+    return np.array([ax, ay])
+
+def main(r, ts):
+
+    t = 0                   
+    tEnd = 100000.0        
+    dt = ts ** 1.5 / (14400 / 222.1527)     
+    G = 1.0                
+    l = int(r*2)           
+    plotRealTime = False     
+
+    mass = np.array([[100], [1]])  
+    pos = np.array([[0.0, 0.0], [r, 0.0]]) 
+    vel = np.array([0.0, (G*mass[0, 0]/r)**0.5 ])  
+
+    acc = getAcc(pos, mass, G)
+    
+    Nt = int(np.ceil(tEnd/dt))
+
+    pos_save = np.zeros((2, 2, Nt+1))
+    pos_save[:, :, 0] = pos
+    t_all = np.arange(Nt+1)*dt
+
+    for i in range(Nt):
+
+        vel += acc * dt
+
+        pos[1] += vel * dt
+
+        acc = getAcc(pos, mass, G)
+
+        t += dt
+
+        pos_save[:, :, i+1] = pos
+
+        if ( pos_save[:, 1, i][1] < 0 and pos_save[:, 1, i+1][1] > 0 ):
+            k = t**2 / r**3            
+            break
+
+    return k
+
+radius = [i for i in range(50, 1001, 50)]
+k = []
+
+for i, r in enumerate(radius, 1):
+    k.append(float(str(main(r, i))[:14]))
+
+plt.scatter(radius, k)
+plt.xlabel("Orbit Radius")
+plt.ylabel("Kepler's Constant")
+plt.xticks([i for i in range(0, 1001, 100)])
+#plt.savefig("n.png", dpi=240)
+plt.show()

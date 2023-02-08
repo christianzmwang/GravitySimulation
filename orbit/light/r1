@@ -20,7 +20,6 @@ def getAcc(pos, mass, G):
     inv_r = r**-1
 
     thet = abs(atan(dy/dx))
-
     f = G * inv_r * mass[0] * mass[1] 
 
     ax = float(cos(thet) * (f/mass[1]) ) * ax_dir

@@ -17,11 +17,9 @@ def getAcc(pos, mass, G):
     ay_dir = -1 if dy < 0 else 1
 
     r = ( dx**2 + dy**2 ) ** 0.5
-
-    thet = abs(atan(dy/dx))
-
     inv_r2 = r**-2
-
+    
+    thet = abs(atan(dy/dx))
     f = G * inv_r2 * mass[0] * mass[1] 
 
     ax = float(cos(thet) * (f/mass[1]) ) * ax_dir
